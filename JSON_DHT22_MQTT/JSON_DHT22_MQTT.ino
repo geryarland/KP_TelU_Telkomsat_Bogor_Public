@@ -19,7 +19,7 @@ const char* ssid = "Enter Your SSID";
 const char* password = "Enter Your Password";
 
 // Konfigurasi MQTT
-const char* mqtt_server = "your_mqtt_server";
+const char* mqtt_server = "192.168.84.103";
 const int mqtt_port = 1883;
 const char* mqtt_topic = "your_topic";
 
