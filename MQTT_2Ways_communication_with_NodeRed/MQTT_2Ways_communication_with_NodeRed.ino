@@ -29,7 +29,6 @@ long lastMsg = 0;
 char message[150];
 int value = 0;
 
-void callback(char* topic, byte* payload, unsigned int length);
 
 void setup()
 {
@@ -146,9 +145,6 @@ void reconnect() {
     if (mqttClient.connect(client_id.c_str())) {
       Serial.printf("Terhubung ke server MQTT with client ID %s",client_id.c_str() );
       Serial.println("connected");
-      // Subscribe
-      // mqttClient.subscribe("LED"); // Subscribe ke topik "LED"
-      // mqttClient.subscribe("dht11"); // Subscribe ke topik "dht11"
     } else {
       Serial.print("failed, rc=");
       Serial.print(mqttClient.state());
