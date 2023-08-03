@@ -1,0 +1,479 @@
+[
+    {
+        "id": "82188cc777f3defe",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "9cc612f7d310d9fa",
+        "type": "group",
+        "z": "82188cc777f3defe",
+        "name": "test sebelum ke web",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "2f322a3d08c5f545",
+            "9d7ce5800fb95490",
+            "c706a6a45db3bb7b"
+        ],
+        "x": 154,
+        "y": 59,
+        "w": 172,
+        "h": 122
+    },
+    {
+        "id": "c706a6a45db3bb7b",
+        "type": "junction",
+        "z": "82188cc777f3defe",
+        "g": "9cc612f7d310d9fa",
+        "x": 274.1999969482422,
+        "y": 143.1999969482422,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2f322a3d08c5f545",
+        "type": "inject",
+        "z": "82188cc777f3defe",
+        "g": "9cc612f7d310d9fa",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "LED",
+        "payload": "on",
+        "payloadType": "str",
+        "x": 250,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fa45bdb9c4b214f7",
+        "type": "mqtt out",
+        "z": "82188cc777f3defe",
+        "name": "",
+        "topic": "LED",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "175a94db5a8da5e2",
+        "x": 750,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "9d7ce5800fb95490",
+        "type": "inject",
+        "z": "82188cc777f3defe",
+        "g": "9cc612f7d310d9fa",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "LED",
+        "payload": "off",
+        "payloadType": "str",
+        "x": 250,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "931b0f93bdf4d8f7",
+        "type": "mqtt in",
+        "z": "82188cc777f3defe",
+        "name": "Temperatur",
+        "topic": "dht11/temp",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "175a94db5a8da5e2",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 430,
+        "y": 240,
+        "wires": [
+            [
+                "51421322e7450c59",
+                "fe5c8c20feb75694",
+                "52af96c2bf8f1923"
+            ]
+        ]
+    },
+    {
+        "id": "51421322e7450c59",
+        "type": "debug",
+        "z": "82188cc777f3defe",
+        "name": "Temperature",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 770,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "fe5c8c20feb75694",
+        "type": "ui_text",
+        "z": "82188cc777f3defe",
+        "group": "61285987.c20328",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Temperature",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": "",
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 770,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "a0f80d8b2f4c2755",
+        "type": "mqtt in",
+        "z": "82188cc777f3defe",
+        "name": "Humidity",
+        "topic": "dht11/humid",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "175a94db5a8da5e2",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 420,
+        "y": 300,
+        "wires": [
+            [
+                "c0aa5281998c631b",
+                "0d8aac6bcc281ee5",
+                "52af96c2bf8f1923"
+            ]
+        ]
+    },
+    {
+        "id": "c0aa5281998c631b",
+        "type": "debug",
+        "z": "82188cc777f3defe",
+        "name": "Humidity",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "0d8aac6bcc281ee5",
+        "type": "ui_text",
+        "z": "82188cc777f3defe",
+        "group": "61285987.c20328",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Humidity",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": "",
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 760,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "2a2514810068babe",
+        "type": "mqtt in",
+        "z": "82188cc777f3defe",
+        "name": "",
+        "topic": "dht11/index",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "175a94db5a8da5e2",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 430,
+        "y": 360,
+        "wires": [
+            [
+                "96a6eb16c1431abf",
+                "3dbe739f450a77f1"
+            ]
+        ]
+    },
+    {
+        "id": "96a6eb16c1431abf",
+        "type": "debug",
+        "z": "82188cc777f3defe",
+        "name": "Heat Index",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 770,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "969793bea21a5e4a",
+        "type": "mqtt in",
+        "z": "82188cc777f3defe",
+        "name": "",
+        "topic": "LED",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "175a94db5a8da5e2",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 410,
+        "y": 420,
+        "wires": [
+            [
+                "40d795db095e3b93",
+                "2ff584165e9ac869"
+            ]
+        ]
+    },
+    {
+        "id": "40d795db095e3b93",
+        "type": "ui_text",
+        "z": "82188cc777f3defe",
+        "group": "61285987.c20328",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "LED",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 750,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "2ff584165e9ac869",
+        "type": "debug",
+        "z": "82188cc777f3defe",
+        "name": "LED_Status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 770,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "3dbe739f450a77f1",
+        "type": "ui_text",
+        "z": "82188cc777f3defe",
+        "group": "61285987.c20328",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Index",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": "",
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 750,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "de739f5e9f1afb25",
+        "type": "ui_switch",
+        "z": "82188cc777f3defe",
+        "name": "",
+        "label": "LED",
+        "tooltip": "",
+        "group": "61285987.c20328",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "LED",
+        "topicType": "str",
+        "style": "",
+        "onvalue": "on",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "off",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "className": "",
+        "x": 410,
+        "y": 160,
+        "wires": [
+            [
+                "fa45bdb9c4b214f7"
+            ]
+        ]
+    },
+    {
+        "id": "52af96c2bf8f1923",
+        "type": "ui_chart",
+        "z": "82188cc777f3defe",
+        "name": "",
+        "group": "61285987.c20328",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "label": "history",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": "5",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 750,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "175a94db5a8da5e2",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "10.99.226.225",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "61285987.c20328",
+        "type": "ui_group",
+        "name": "ESP32_DHT11_LED",
+        "tab": "e7c46d5e.a1283",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": "payload.temperature"
+    },
+    {
+        "id": "e7c46d5e.a1283",
+        "type": "ui_tab",
+        "name": "LED_Tab",
+        "icon": "LED_Icon",
+        "disabled": false,
+        "hidden": false
+    }
+]
