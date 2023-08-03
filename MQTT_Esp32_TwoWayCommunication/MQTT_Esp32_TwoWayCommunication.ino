@@ -2,35 +2,88 @@
 #include <DHT.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
+#include "ESPAsyncWebServer.h"
 
 #define LED 2
 #define DHTPIN 27  
-#define DHTTYPE DHT22
+#define DHTTYPE DHT11 
 
 DHT dht(DHTPIN, DHTTYPE);
 
-const char* ssid     = "Your SSID";
-const char* password = "Your Password";
+const char* ssid     = "YOUR SSID";
+const char* password = "YOUR PASSWORD";
 
 // Konfigurasi MQTT
-const char* mqtt_server = "xxxx.xxxx.xxxx.xxxx";
+const char* mqtt_server = "MQTT Server";
 const int mqtt_port = 1883;
 
-// char message[200]; // Menampung pesan dari subscribed topics
-// int messageIndex = 0; // Indeks untuk memasukkan karakter ke dalam message
-
 //cek ip address broker, cek availability ip yg tersedia
-IPAddress local_IP(xxxx,xxxx,xxxx,xxxx);
-IPAddress gateway(xxxx,xxxx,xxxx,xxxx);
-IPAddress subnet(xxxx,xxxx,xxxx,xxxx);
-IPAddress primaryDNS(xxxx,xxxx,xxxx,xxxx); //optional
-IPAddress secondaryDNS(xxxx,xxxx,xxxx,xxxx); //optional
+IPAddress local_IP(xx, xx, xx, xx);
+IPAddress gateway(xx, xx, xx, xx);
+IPAddress subnet(255, 255, 255, 0);
+IPAddress primaryDNS(x, x, x, x); //optional
+IPAddress secondaryDNS(x, x, x, x); //optional
+
 
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
 long lastMsg = 0;
+char message[150];
 int value = 0;
 
+// HTML web page
+const char index_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE HTML><html>
+  <head>
+    <title>ESP Pushbutton Web Server</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body { font-family: Arial; text-align: center; margin:0px auto; padding-top: 30px;}
+      .button {
+        padding: 10px 20px;
+        font-size: 24px;
+        text-align: center;
+        outline: none;
+        color: #fff;
+        background-color: #2f4468;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 6px #999;
+        cursor: pointer;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+      }  
+      .button:hover {background-color: #1f2e45}
+      .button:active {
+        background-color: #1f2e45;
+        box-shadow: 0 4px #666;
+        transform: translateY(2px);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>ESP Pushbutton Web Server</h1>
+    <button class="button" onmousedown="toggleCheckbox('on');" ontouchstart="toggleCheckbox('on');" onmouseup="toggleCheckbox('off');" ontouchend="toggleCheckbox('off');">LED PUSHBUTTON</button>
+   <script>
+   function toggleCheckbox(x) {
+     var xhr = new XMLHttpRequest();
+     xhr.open("GET", "/" + x, true);
+     xhr.send();
+   }
+  </script>
+  </body>
+</html>)rawliteral";
+
+void notFound(AsyncWebServerRequest *request) {
+  request->send(404, "text/plain", "Not found");
+}
+
+AsyncWebServer server(80);
 
 void setup()
 {
@@ -68,10 +121,13 @@ void setup()
   mqttClient.setCallback(callback);
   
   while (!mqttClient.connected()) {
-    String client_id="ESP32Client-"+WiFi.macAddress();
+    String client_id="ESP32-Client-" + String(WiFi.macAddress());
     if (mqttClient.connect(client_id.c_str())) {
-      Serial.printf("connected to MQTT broker with client id %s",client_id.c_str());
-      Serial.println();
+      Serial.printf("Terhubung ke server MQTT with client ID %s",client_id.c_str() );
+      // Subscribe ke topik "LED"
+      mqttClient.subscribe("LED"); 
+      // Subscribe ke topik "dht11"
+      mqttClient.subscribe("dht11");
     } else {
       Serial.println("Gagal terhubung ke server MQTT, coba lagi dalam 5 detik...");
       delay(5000);
@@ -80,38 +136,55 @@ void setup()
 
   pinMode(LED,OUTPUT);
   dht.begin();
+  //running web server (simple)
+   // Send web page to client
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", index_html);
+  });
 
+  // Receive an HTTP GET request
+  server.on("/on", HTTP_GET, [] (AsyncWebServerRequest *request) {
+    mqttClient.publish("LED", "on"); 
+    request->send(200, "text/plain", "Turn on LED");
+  });
+
+  // Receive an HTTP GET request
+  server.on("/off", HTTP_GET, [] (AsyncWebServerRequest *request) {
+    mqttClient.publish("LED", "off"); 
+    request->send(200, "text/plain", "Turn off LED");
+  });
+  
+  server.onNotFound(notFound);
+  server.begin();
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Message arrived on topic: ");
+  Serial.print("\nMessage arrived on topic: ");
   Serial.print(topic);
   Serial.println(". Message: ");
-  // String message;
-  // for (int i=0;i<length;i++) {
-  //   Serial.print((char)payload[i]);
-  //   message += (char)payload[i];
-  // }
-  // Serial.println(message);
-   
-  // Feel free to add more if statements to control more GPIOs with MQTT
-
-  // If a message is received on the topic esp32/output, you check if the message is either "on" or "off". 
+  String messageTemp;
+  
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)payload[i]);
+    messageTemp += (char)payload[i];
+  }
+  
+  // If a message is received on the topic LED, you check if the message is either "on" or "off". 
   // Changes the output state according to the message
-  // if (String(topic) == "LED") {
-  //   Serial.print("Changing output to ");
-  //   if(message == "on"){
-  //     Serial.println("on");
-  //     digitalWrite(LED, HIGH);
-  //   }
-  //   else if(message == "off"){
-  //     Serial.println("off");
-  //     digitalWrite(LED, LOW);
-  //   }
-  // }
-  // else if(String(topic) == "dht22"){
-  //   Serial.println(message);
-  // }
+  if (String(topic) == "LED") {
+    Serial.printf("Changing output to ");
+    if(messageTemp == "on"){
+      Serial.println("on");
+      digitalWrite(LED, HIGH);
+    }
+    else if(messageTemp == "off"){
+      Serial.println("off");
+      digitalWrite(LED, LOW);
+    }
+  }
+  else if(String(topic) == "dht11"){
+    Serial.println(messageTemp);
+  }
     
 }
 
@@ -120,11 +193,9 @@ void reconnect() {
   while (!mqttClient.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    String client_id="ESP32Client-"+WiFi.macAddress();
+   String client_id="ESP32-Client-" + String(WiFi.macAddress());
     if (mqttClient.connect(client_id.c_str())) {
-      Serial.printf("connected to MQTT broker with client id %s",client_id.c_str());
-      // Subscribe
-      mqttClient.subscribe("dht22");
+      Serial.printf("Terhubung ke server MQTT with client ID %s",client_id.c_str() );
     } else {
       Serial.print("failed, rc=");
       Serial.print(mqttClient.state());
@@ -159,7 +230,7 @@ void loop() {
   
   // Membuat objek JSON dan mengisi data
   StaticJsonDocument<200> jsonDoc;
-  jsonDoc["sensor"] = "DHT22";
+  jsonDoc["sensor"] = "DHT11";
   jsonDoc["temperature"] = String(t);
   jsonDoc["humidity"] = String(h, 2);
   jsonDoc["heatIndex"] = String(hic, 2);
@@ -177,9 +248,9 @@ void loop() {
   if (now - lastMsg > 5000) {
     lastMsg = now;
       // Mengirim data ke MQTT Broker
-    char topic[] = "dht22";
+    char topic[] = "dht11";
     mqttClient.publish(topic, jsonString.c_str());
     //print message to serial monitor
-    Serial.println(jsonString.c_str());
+    Serial.printf("Publish to MQTT broker with topic dht11 & message: %s",jsonString.c_str());
   }
 }
