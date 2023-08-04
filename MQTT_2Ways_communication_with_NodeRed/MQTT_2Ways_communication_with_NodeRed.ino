@@ -143,8 +143,7 @@ void reconnect() {
     // Attempt to connect
     String client_id="ESP32-Client-" + String(WiFi.macAddress());
     if (mqttClient.connect(client_id.c_str())) {
-      Serial.printf("Terhubung ke server MQTT with client ID %s",client_id.c_str() );
-      Serial.println("connected");
+      Serial.printf("Terhubung ke server MQTT with client ID %s",client_id.c_str());
     } else {
       Serial.print("failed, rc=");
       Serial.print(mqttClient.state());
