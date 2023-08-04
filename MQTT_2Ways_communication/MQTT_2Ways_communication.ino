@@ -2,6 +2,7 @@
 #include <DHT.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
+#include "ESPAsyncWebServer.h"
 
 #define LED 2
 #define DHTPIN 27  
@@ -23,12 +24,66 @@ IPAddress subnet(255, 255, 255, 0);
 IPAddress primaryDNS(x, x, x, x); //optional
 IPAddress secondaryDNS(x, x, x, x); //optional
 
+
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
 long lastMsg = 0;
 char message[150];
 int value = 0;
 
+// HTML web page
+const char index_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE HTML><html>
+  <head>
+    <title>ESP Pushbutton Web Server</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body { font-family: Arial; text-align: center; margin:0px auto; padding-top: 30px;}
+      .button {
+        padding: 10px 20px;
+        font-size: 24px;
+        text-align: center;
+        outline: none;
+        color: #fff;
+        background-color: #2f4468;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 6px #999;
+        cursor: pointer;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+      }  
+      .button:hover {background-color: #1f2e45}
+      .button:active {
+        background-color: #1f2e45;
+        box-shadow: 0 4px #666;
+        transform: translateY(2px);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>ESP Pushbutton Web Server</h1>
+    <button class="button" onmousedown="toggleCheckbox('on');" ontouchstart="toggleCheckbox('on');" onmouseup="toggleCheckbox('off');" ontouchend="toggleCheckbox('off');">LED PUSHBUTTON</button>
+   <script>
+   function toggleCheckbox(x) {
+     var xhr = new XMLHttpRequest();
+     xhr.open("GET", "/" + x, true);
+     xhr.send();
+   }
+  </script>
+  </body>
+</html>)rawliteral";
+
+void notFound(AsyncWebServerRequest *request) {
+  request->send(404, "text/plain", "Not found");
+}
+
+AsyncWebServer server(80);
 
 void setup()
 {
@@ -71,10 +126,7 @@ void setup()
       Serial.printf("Terhubung ke server MQTT with client ID %s",client_id.c_str() );
       // Subscribe ke topik "LED"
       mqttClient.subscribe("LED"); 
-      // Subscribe ke topik "dht11/temp", "dht11/humid", dan "dht11/index"
-      mqttClient.subscribe("dht11/temp");
-      mqttClient.subscribe("dht11/humid");
-      mqttClient.subscribe("dht11/index");
+      // Subscribe ke topik "dht11"
       mqttClient.subscribe("dht11");
     } else {
       Serial.println("Gagal terhubung ke server MQTT, coba lagi dalam 5 detik...");
@@ -84,13 +136,32 @@ void setup()
 
   pinMode(LED,OUTPUT);
   dht.begin();
+  //running web server (simple)
+   // Send web page to client
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html", index_html);
+  });
 
+  // Receive an HTTP GET request
+  server.on("/on", HTTP_GET, [] (AsyncWebServerRequest *request) {
+    mqttClient.publish("LED", "on"); 
+    request->send(200, "text/plain", "Turn on LED");
+  });
+
+  // Receive an HTTP GET request
+  server.on("/off", HTTP_GET, [] (AsyncWebServerRequest *request) {
+    mqttClient.publish("LED", "off"); 
+    request->send(200, "text/plain", "Turn off LED");
+  });
+  
+  server.onNotFound(notFound);
+  server.begin();
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("\nMessage arrived on topic: ");
   Serial.print(topic);
-  Serial.print(". Message: ");
+  Serial.println(". Message: ");
   String messageTemp;
   
   for (int i = 0; i < length; i++) {
@@ -98,35 +169,16 @@ void callback(char* topic, byte* payload, unsigned int length) {
     messageTemp += (char)payload[i];
   }
   
-// Jika pesan diterima pada topik "dht11/temp", maka tampilkan data temperatur
-  if (String(topic) == "dht11/temp") {
-    float t = messageTemp.toFloat();
-    Serial.print("\nTemperature: ");
-    Serial.print(t);
-  }
-  // Jika pesan diterima pada topik "dht11/humid", maka tampilkan data kelembaban
-  else if (String(topic) == "dht11/humid") {
-    float h = messageTemp.toFloat();
-    Serial.print("\nHumidity: ");
-    Serial.print(h);
-  }
-  // Jika pesan diterima pada topik "dht11/index", maka tampilkan data indeks panas
-  else if (String(topic) == "dht11/index") {
-    float hic = messageTemp.toFloat();
-    Serial.print("\nHeat Index: ");
-    Serial.print(hic);
-  }
-
   // If a message is received on the topic LED, you check if the message is either "on" or "off". 
   // Changes the output state according to the message
   if (String(topic) == "LED") {
-    Serial.println("Changing output to ");
+    Serial.printf("Changing output to ");
     if(messageTemp == "on"){
-      Serial.println("\non");
+      Serial.println("on");
       digitalWrite(LED, HIGH);
     }
     else if(messageTemp == "off"){
-      Serial.println("\noff");
+      Serial.println("off");
       digitalWrite(LED, LOW);
     }
   }
@@ -141,9 +193,9 @@ void reconnect() {
   while (!mqttClient.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    String client_id="ESP32-Client-" + String(WiFi.macAddress());
+   String client_id="ESP32-Client-" + String(WiFi.macAddress());
     if (mqttClient.connect(client_id.c_str())) {
-      Serial.printf("Terhubung ke server MQTT with client ID %s",client_id.c_str());
+      Serial.printf("Terhubung ke server MQTT with client ID %s",client_id.c_str() );
     } else {
       Serial.print("failed, rc=");
       Serial.print(mqttClient.state());
@@ -156,7 +208,7 @@ void reconnect() {
 
 void loop() {
   // Wait a few seconds between measurements.
-  delay(500);
+  delay(2000);
 
   // Reading temperature or humidity takes about 250 milliseconds!
   // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
@@ -195,12 +247,10 @@ void loop() {
   long now = millis();
   if (now - lastMsg > 5000) {
     lastMsg = now;
-    // Mengirim data ke MQTT Broker
-    mqttClient.publish("dht11/temp", String(t).c_str());
-    mqttClient.publish("dht11/humid", String(h).c_str());
-    mqttClient.publish("dht11/index", String(hic).c_str());
-    mqttClient.publish("dht11",jsonString.c_str());
+      // Mengirim data ke MQTT Broker
+    char topic[] = "dht11";
+    mqttClient.publish(topic, jsonString.c_str());
     //print message to serial monitor
-    Serial.printf("publish MQTT Data with topic dht11 & message %s ", jsonString.c_str());
+    Serial.printf("Publish to MQTT broker with topic dht11 & message: %s",jsonString.c_str());
   }
 }
