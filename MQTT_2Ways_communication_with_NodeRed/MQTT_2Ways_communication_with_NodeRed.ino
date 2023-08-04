@@ -9,7 +9,7 @@
 
 DHT dht(DHTPIN, DHTTYPE);
 
-const char* ssid     = "YOUR SSID;
+const char* ssid     = "YOUR SSID";
 const char* password = "YOUR PASSWORD";
 
 // Konfigurasi MQTT
