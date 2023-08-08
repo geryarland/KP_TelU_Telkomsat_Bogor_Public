@@ -16,7 +16,7 @@
   - Skenario menggunakan sensor DHT22 dengan kontroller ESP32.
     - Task-1: Output sensor DHT Serial Monitor dengan format `Temperature: 27.50°C | Humidity: 55.20% | Heat Index: 28.32°C`
     - Task-2: Eksplorasi library DHT dan Adafruit Unified.
-- Topic-3: MQTT Two Way Communication :
+- Topic 3: MQTT Two Way Communication :
     - Basic & preparation:
       - Assign Static IP on ESP32. Use tools: IP Scanner, ping & Mac Vendors.
       - Install Mosquitto broker, config mosquitto.conf add newline `listener 1883` & `allow_anonymous true`.
@@ -24,6 +24,8 @@
     - Prepare DHT22 JSON, example: `{"sensor":"DHT11","temperature":"31.30","humidity":"37.00","heatIndex":"30.87"}`.
     - Task-1: MQTT-Node-Red.
     - Task-2: MQTT-Web Server 2-Way Communication with Ngrok as port forwarding.
+- Topic 4: Request ESP32Sensor Readings: Sensor DHT22+ESP32.
+    - Task -1: requests ESP32 NodeMCU temperature and humidity readings using the Telegram app.
 
 ### Resume keseluruhan:
 Pembelajaran yang didapat:
@@ -32,6 +34,7 @@ Pembelajaran yang didapat:
 - Konsep port forwarding
 - IoT untuk support Standarisasi Datacenter ISO 27001 dan appliances lainnya di perusahaan Telekomunikasi berbasis satelit.
 - Belajar PubSub MQTT dengan mengirim data dalam bentuk JSON dan bisa Two Way Communication.
+- Belajar requests ESP32 membaca tempratire dan humidity menggunakan Telegram app dan Mode Bluetooth
 
 ### Insight: Memahami macam-macam beserta cara implementasi IoT berdasarkan referensi Cisco White Paper 2014 pada industri Telekomunikasi berbasis satelit.
 
@@ -51,3 +54,4 @@ Pembelajaran yang didapat:
 - [Laporan PPT](https://docs.google.com/presentation/d/1NmUllhlAY6Tukser3Csq9SfjNbiNwvG42WOzhxu5ojU/edit?usp=sharing)
 - [Dokumentasi](https://github.com/geryarland/dokumentasi_KerjaPraktik.git)
 - Topic 3: (https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/)
+- Topic 4: (https://randomnerdtutorials.com/telegram-request-esp32-esp8266-nodemcu-sensor-readings/)
