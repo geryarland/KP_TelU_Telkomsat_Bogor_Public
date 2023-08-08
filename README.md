@@ -54,4 +54,4 @@ Pembelajaran yang didapat:
 - [Laporan PPT](https://docs.google.com/presentation/d/1NmUllhlAY6Tukser3Csq9SfjNbiNwvG42WOzhxu5ojU/edit?usp=sharing)
 - [Dokumentasi](https://github.com/geryarland/dokumentasi_KerjaPraktik.git)
 - Topic 3: (https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/)
-- Topic 4: (https://randomnerdtutorials.com/telegram-request-esp32-esp8266-nodemcu-sensor-readings/)
+- Topic 4: (https://randomnerdtutorials.com/telegram-request-esp32-esp8266-nodemcu-sensor-readings/#more-97860)
