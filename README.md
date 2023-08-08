@@ -50,4 +50,4 @@ Pembelajaran yang didapat:
 - [Contoh penulisan README.md](https://raw.githubusercontent.com/gungunfebrianza/Belajar-Dengan-Jenius-Python/main/README.md)
 - [Laporan PPT](https://docs.google.com/presentation/d/1NmUllhlAY6Tukser3Csq9SfjNbiNwvG42WOzhxu5ojU/edit?usp=sharing)
 - [Dokumentasi](https://github.com/geryarland/dokumentasi_KerjaPraktik.git)
-- Task 3: (https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/)
+- Topic 3: (https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/)
